@@ -1,24 +1,44 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import { Card } from './Card';
+
+const country_api = "https://countries-search-data-prod-812920491762.asia-south1.run.app/countries";
 
 function App() {
+  const [countries, setCountries] = useState([]);
+  const [search, setSearch] = useState("");
+
+  const fetchCountries = async () => {
+    try{
+      const response = await fetch(country_api);
+      const data = await response.json();
+      setCountries(data);
+    }
+    catch(error)
+    {
+      console.error("Error fetching countries:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+
+  const filteredCountries = countries.filter(country => 
+    country.common.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="search_bar">
+        <input type="text" placeholder="Search for a country..." value={search} onChange={(e) => setSearch(e.target.value)}/>
+      </div>
+      <div className='app_div'>
+        {filteredCountries.map(({common, png}) => (
+          <Card key={common} common={common} png={png} />
+        ))}
+      </div>
+    </>
   );
 }
 
