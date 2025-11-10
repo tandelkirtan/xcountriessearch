@@ -1,4 +1,4 @@
-import styles from "./Card.css";
+import "./Card.css";
 
 export const Card = ({common, png}) => {
   return (
